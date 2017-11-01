@@ -1,4 +1,6 @@
 img = getTitle();
+mag_title = img + " (sobel_mag)"
+phase_title = img + " (sobel_phase)"
 
 selectWindow(img);
 run("Duplicate...", "title=sobel_x");
@@ -17,8 +19,8 @@ run("Square");
 imageCalculator("Add create 32-bit", "sobel_x2","sobel_y2");
 selectWindow("Result of sobel_x2");
 run("Square Root");
-run("Enhance Contrast...", "saturated=0.3");
-rename("sobel_mag");
+run("Enhance Contrast...", "saturated=0.0");
+rename(mag_title);
 
 close("sobel_x2");
 close("sobel_y2");
@@ -42,14 +44,14 @@ y_img[x+(w*y)]=getPixel(x, y);
 } 
 } 
 
-newImage("sobel_phase", "32-bit", w, h, 1); 
+newImage(phase_title, "32-bit", w, h, 1); 
 for (y=0; y<h; y++) { 
 for (x=0; x<w; x++) { 
 setPixel(x, y, 0.5*atan2(y_img[x+(w*y)],x_img[x+(w*y)])); 
 } 
 } 
 updateDisplay();
-run("Enhance Contrast...", "saturated=0.3");
+run("Enhance Contrast...", "saturated=0.0");
 
 close("sobel_x");
 close("sobel_y");

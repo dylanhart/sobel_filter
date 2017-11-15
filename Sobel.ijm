@@ -32,23 +32,23 @@ x_img = newArray(w*h);
 y_img = newArray(w*h); 
 
 for (y=0; y<h; y++) { 
-for (x=0; x<w; x++) { 
-x_img[x+(w*y)]=getPixel(x, y);
-} 
+        for (x=0; x<w; x++) { 
+                x_img[x+(w*y)]=getPixel(x, y);
+        } 
 } 
 
 selectImage("sobel_y"); 
 for (y=0; y<h; y++) { 
-for (x=0; x<w; x++) { 
-y_img[x+(w*y)]=getPixel(x, y); 
-} 
+        for (x=0; x<w; x++) { 
+                y_img[x+(w*y)]=getPixel(x, y); 
+        } 
 } 
 
 newImage(phase_title, "32-bit", w, h, 1); 
 for (y=0; y<h; y++) { 
-for (x=0; x<w; x++) { 
-setPixel(x, y, 0.5*atan2(y_img[x+(w*y)],x_img[x+(w*y)])); 
-} 
+        for (x=0; x<w; x++) { 
+                setPixel(x, y, atan2(y_img[x+(w*y)],x_img[x+(w*y)])); 
+        } 
 } 
 updateDisplay();
 run("Enhance Contrast...", "saturated=0.0");

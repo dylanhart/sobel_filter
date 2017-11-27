@@ -87,17 +87,23 @@ public class SobelEdgeness_ implements PlugInFilter {
             }
 
             // calculate statistics
-            this.mean = Arrays.stream(buckets).average().orElse(0);
-            this.max = Arrays.stream(buckets).max().orElse(0);
-            this.min = Arrays.stream(buckets).min().orElse(0);
-            // sqrt(sum(squared diff to mean) / N-1)
-            this.stdDev = Math.sqrt(
-                    Arrays.stream(buckets)
-                        .map(x -> Math.abs(x - this.mean))
-                        .map(x -> Math.pow(x, 2))
-                        .sum() / (buckets.length - 1)
-            );
+            double sum = 0;
+            this.max = this.min = buckets[0];
+            for (double value : buckets) {
+                if (value > this.max) this.max = value;
+                if (value < this.min) this.min = value;
+                sum += value;
+            }
+            this.mean = sum / buckets.length;
+
+            double devSum = 0;
+            for (double value : buckets) {
+                devSum += Math.pow(Math.abs(value - this.mean), 2);
+            }
+            this.stdDev = Math.sqrt(devSum / (buckets.length - 1));
+
             this.longPixelCount = pixelCount;
+            this.histYMax = (int) this.max;
         }
 
         @Override

@@ -24,12 +24,12 @@ public class SobelEdgeness_ implements PlugInFilter {
     public void run(ImageProcessor ip) {
         GenericDialog dialog = new GenericDialog("Sobel Edgeness");
         dialog.addNumericField("Bucket Count", BUCKET_COUNT, 0);
-        dialog.addNumericField("Threshold", THRESHOLD, 0);
+        dialog.addChoice("Should Threshold?", new String[] {"Yes", "No"}, "Yes");
         dialog.showDialog();
         if (!dialog.wasOKed()) return;
 
         final int bucketCount = (int) dialog.getNextNumber();
-        final double threshold = dialog.getNextNumber();
+        final boolean shouldThreshold = dialog.getNextChoiceIndex() == 0;
 
         FloatProcessor fp = ip.convertToFloatProcessor();
 
@@ -46,15 +46,23 @@ public class SobelEdgeness_ implements PlugInFilter {
 
         double[] magData = new double[length];
         double[] phaseData = new double[length];
+        double magAvg = 0;
 
         for (int i = 0; i < length; i++) {
             double x = xDelta.getf(i);
             double y = yDelta.getf(i);
 
-            magData[i] = Math.sqrt(x*x + y*y);
-            phaseData[i] = (Math.atan2(y, x) + 2*Math.PI);
-            if (phaseData[i] >= 2*Math.PI) phaseData[i] -= 2*Math.PI;
+            magData[i] = Math.sqrt(x * x + y * y);
+            magAvg += magData[i] / length;
 
+            phaseData[i] = (Math.atan2(y, x) + 2 * Math.PI);
+            if (phaseData[i] >= 2 * Math.PI) phaseData[i] -= 2 * Math.PI;
+        }
+
+        final double threshold = (shouldThreshold ? magAvg : 0);
+        IJ.log("Edgeness Threshold: " + threshold);
+
+        for (int i = 0; i < length; i++) {
             if (magData[i] >= threshold) {
                 int bucket = (int) Math.floor(phaseData[i] / bucketWidth);
                 buckets[bucket] += magData[i];
